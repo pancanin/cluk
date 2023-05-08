@@ -1,0 +1,3 @@
+C:/Users/Freeware Sys/source/repos/cluk/build/CMakeFiles/cluk.dir
+C:/Users/Freeware Sys/source/repos/cluk/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Freeware Sys/source/repos/cluk/build/CMakeFiles/ZERO_CHECK.dir
