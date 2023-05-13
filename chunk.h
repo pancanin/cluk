@@ -3,42 +3,40 @@
 
 #include "common.h"
 #include "memory.h"
+#include "value.h"
 
 typedef enum {
-	OP_RETURN
+	OP_RETURN,
+	OP_CONSTANT
 } OpCode;
 
+typedef struct {
+	int line;
+	int count;
+} LineCount;
 
-// TODO: Create a impl file and possibly move this definition there.
+
+/// <summary>
+/// A Chunk contains several bytecode instructions.
+/// </summary>
 typedef struct {
 	size_t capacity;
 	size_t count;
+	/// <summary>
+	/// Each instruction in the code is, most of the time, one byte.
+	/// We are representing one byte with an unsigned 8 bit integer.
+	/// </summary>
 	uint8_t* code;
+	int* lines;
+	ValueArray constants;
 } Chunk;
 
-void initChunk(Chunk* chunk) {
-	assert(chunk);
-	chunk->capacity = 0;
-	chunk->count = 0;
-	chunk->code = NULL;
-}
+void initChunk(Chunk* chunk);
 
-void writeChunk(Chunk* chunk, uint8_t byte) {
-	assert(chunk);
+void writeChunk(Chunk* chunk, uint8_t byte, uint32_t line);
 
-	if (chunk->count + 1 > chunk->capacity) {
-		size_t oldCapacity = chunk->capacity;
-		chunk->capacity = GROW_CAPACITY(chunk->capacity);
-		chunk->code = GROW_ARRAY(uint8_t, chunk->code, oldCapacity, chunk->capacity);
-	}
+void freeChunk(Chunk* chunk);
 
-	chunk->code[chunk->count] = byte;
-	chunk->count++;
-}
-
-void freeChunk(Chunk* chunk) {
-	FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
-	initChunk(chunk);
-}
+int addConstant(Chunk* chunk, Value value);
 
 #endif
