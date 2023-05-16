@@ -27,7 +27,13 @@ typedef struct {
 	/// We are representing one byte with an unsigned 8 bit integer.
 	/// </summary>
 	uint8_t* code;
+
+	/// <summary>
+	/// Run-length encoded.
+	/// </summary>
 	int* lines;
+	size_t linesCapacity;
+	size_t linesCount;
 	ValueArray constants;
 } Chunk;
 
@@ -38,5 +44,7 @@ void writeChunk(Chunk* chunk, uint8_t byte, uint32_t line);
 void freeChunk(Chunk* chunk);
 
 int addConstant(Chunk* chunk, Value value);
+
+int getLine(Chunk* chunk, int offset);
 
 #endif
