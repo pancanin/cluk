@@ -19,6 +19,7 @@ void initChunk(Chunk* chunk) {
 
 void writeChunk(Chunk* chunk, uint32_t byte, uint32_t line, uint32_t numBytes) {
 	assert(chunk);
+	assert(numBytes <= 4);
 
 	if (chunk->count + numBytes > chunk->capacity) {
 		size_t oldCapacity = chunk->capacity;
@@ -34,8 +35,15 @@ void writeChunk(Chunk* chunk, uint32_t byte, uint32_t line, uint32_t numBytes) {
 	}
 
 	if (numBytes == 1) {
-		chunk->code[chunk->count] = byte;
+		chunk->code[chunk->count] = (uint8_t)byte;
 		chunk->count++;
+	}
+	else {
+		// 1. Shift the integer value so that the most significant bit is at the left-most position.
+		uint8_t shiftSize = (sizeof(uint32_t) - numBytes) * 8;
+		byte = byte << shiftSize;
+		memcpy(&chunk->code[chunk->count], &byte, numBytes);
+		chunk->count += numBytes;
 	}
 
 	// Run-length encode the line numbers.
@@ -47,14 +55,23 @@ void writeChunk(Chunk* chunk, uint32_t byte, uint32_t line, uint32_t numBytes) {
 
 void writeConstant(Chunk* chunk, Value value, uint32_t line) {
 	int constantOffset = addConstant(chunk, value);
-	writeChunk(chunk, OP_CONSTANT, line);
-	writeChunk(chunk, constantOffset, line);
+	writeChunk(chunk, OP_CONSTANT, line, 1);
+	writeChunk(chunk, constantOffset, line, 1);
 }
 
 void writeConstantLong(Chunk* chunk, Value value, uint32_t line) {
 	int constantOffset = addConstant(chunk, value);
-	writeChunk(chunk, OP_CONSTANT_LONG, line);
+	writeChunk(chunk, OP_CONSTANT_LONG, line, 1);
+	writeChunk(chunk, constantOffset, line, 3);
+}
 
+uint32_t readConstantLongOffset(Chunk* chunk, uint32_t offsetsOffset) {
+	// Copy three bytes from chunk memory to an int
+	uint32_t offset = 0;
+	memcpy(&offset, chunk->code + offsetsOffset, 3);
+	uint8_t shiftSize = (sizeof(uint32_t) - 3) * 8;
+	offset = offset >> shiftSize;
+	return offset;
 }
 
 void freeChunk(Chunk* chunk) {

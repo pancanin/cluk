@@ -26,6 +26,8 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     return simpleInstruction("OP_RETURN", offset);
   case OP_CONSTANT:
 	  return constantInstruction("OP_CONSTANT", chunk, offset);
+  case OP_CONSTANT_LONG:
+    return constantLongInstruction("OP_CONSTANT_LONG", chunk, offset);
   default:
     printf("Unknown opcode %d\n", instruction);
     return offset + 1;
@@ -44,4 +46,12 @@ static int constantInstruction(const char* name, Chunk* chunk,
 	printValue(chunk->constants.values[constantIdx]);
 	printf("'\n");
 	return offset + 2;
+}
+
+static int constantLongInstruction(const char* name, Chunk* chunk, uint32_t offset) {
+  uint32_t idx = readConstantLongOffset(chunk, offset + 1);
+  printf("%-16s %4d '", name, idx);
+  printValue(chunk->constants.values[idx]);
+  printf("'\n");
+  return offset + 4;
 }
