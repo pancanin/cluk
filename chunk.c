@@ -50,7 +50,7 @@ void writeChunk(Chunk* chunk, uint32_t byte, uint32_t line, uint32_t numBytes) {
 	if (chunk->lines[line - 1] == 0) {
 		chunk->linesCount++;
 	}
-	chunk->lines[line - 1]++;
+	chunk->lines[line - 1] += numBytes;
 }
 
 void writeConstant(Chunk* chunk, Value value, uint32_t line) {
