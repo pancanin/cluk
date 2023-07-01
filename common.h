@@ -7,4 +7,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#define DEBUG_TRACE_EXECUTION
+
 #endif
