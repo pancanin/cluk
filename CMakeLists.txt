@@ -9,6 +9,12 @@ add_executable(cluk
     memory.h
     memory.c
     debug.h
-    debug.c)
+    debug.c
+compiler.h
+compiler.c
+scanner.c
+scanner.c
+vm.h
+vm.c)
 
 target_include_directories(cluk PRIVATE ${PROJECT_SOURCE_DIR})
